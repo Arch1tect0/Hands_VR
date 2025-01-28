@@ -2,24 +2,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO; // Required for file operations
 
-public class PositionRotationRecorder : MonoBehaviour
+public class SaveData : MonoBehaviour
 {
+    //hand data, rb vel is too small
 
-    // To DO: 
-    // Add velocity and acceleration
-    //check if data is null don't save.
-
-    // *****************************************************************************************************************************************
     // A struct to store data
     public struct TransformData
     {
         public Vector3 position;
         public Quaternion rotation;
+        public Vector3 velocity;
+        public Vector3 angVelocity;
 
-        public TransformData(Vector3 pos, Quaternion rot)
+        public TransformData(Vector3 pos, Quaternion rot, Vector3 vel, Vector3 angVel)
         {
             position = pos;
             rotation = rot;
+            velocity = vel;
+            angVelocity = angVel;
         }
     }
 
@@ -42,10 +42,11 @@ public class PositionRotationRecorder : MonoBehaviour
     private float timeSinceLastRecord = 0.0f;
 
     // Flag to start/stop recording
-    public bool isRecording = false;
+    public bool isRecording;
 
     void Update()
     {
+        
         // Check if recording is enabled
         if (isRecording)
         {
@@ -55,10 +56,10 @@ public class PositionRotationRecorder : MonoBehaviour
             // Calculate the current speed of the object
             float speed = rb.velocity.magnitude;
 
-            if (timeSinceLastRecord >= recordInterval)
+            if (speedThreshold >= speed && timeSinceLastRecord >= recordInterval)
             {
                 // Record the current position and rotation
-                recordedData.Add(new TransformData(transform.position, transform.rotation));
+                recordedData.Add(new TransformData(transform.position, transform.rotation, rb.velocity, rb.angularVelocity));
 
                 // Reset the timer
                 timeSinceLastRecord = 0.0f;
@@ -70,14 +71,14 @@ public class PositionRotationRecorder : MonoBehaviour
     // Method to save recorded data to a file on the desktop
     public void SaveDataToDesktop()
     {
-        string desktopPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop);
-        string filePath = Path.Combine(desktopPath, this.name + "_RecordedData.txt");
+        string desktopPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop) ;
+        string filePath = Path.Combine(desktopPath + "//Recorded_Data", this.name + "_Data.txt");
 
         using (StreamWriter writer = new StreamWriter(filePath))
         {
             foreach (TransformData data in recordedData)
             {
-                writer.WriteLine($"Position: {data.position}, Rotation: {data.rotation}");
+                writer.WriteLine($"{data.position},{data.rotation}, {data.velocity}, {data.angVelocity}");
             }
         }
 
