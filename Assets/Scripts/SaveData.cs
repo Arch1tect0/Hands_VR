@@ -1,35 +1,39 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.IO; // Required for file operations
+using System.IO;
 
 public class SaveData : MonoBehaviour
 {
     //hand data, rb vel is too small
 
     // A struct to store data
-    public struct TransformData
+    public struct Data
     {
         public Vector3 position;
         public Quaternion rotation;
         public Vector3 velocity;
         public Vector3 angVelocity;
+        public Pose[] leftHand;
+        public Pose[] rightHand;
 
-        public TransformData(Vector3 pos, Quaternion rot, Vector3 vel, Vector3 angVel)
+        public Data(Vector3 pos, Quaternion rot, Vector3 vel, Vector3 angVel, Pose[] lHand, Pose[] rhand)
         {
             position = pos;
             rotation = rot;
             velocity = vel;
             angVelocity = angVel;
+            leftHand = lHand;
+            rightHand = rhand;
         }
     }
 
     // List to store the recorded data
-    private List<TransformData> recordedData = new List<TransformData>();
+    private List<Data> recordedData = new List<Data>();
 
     // Method to retrieve the recorded data
-    public List<TransformData> GetRecordedData()
+    public List<Data> GetRecordedData()
     {
-        return new List<TransformData>(recordedData);
+        return new List<Data>(recordedData);
     }
 
     // *****************************************************************************************************************************************
@@ -59,7 +63,8 @@ public class SaveData : MonoBehaviour
             if (speedThreshold >= speed && timeSinceLastRecord >= recordInterval)
             {
                 // Record the current position and rotation
-                recordedData.Add(new TransformData(transform.position, transform.rotation, rb.velocity, rb.angularVelocity));
+                recordedData.Add(new Data(transform.position, transform.rotation, rb.velocity, rb.angularVelocity,
+                    GameManager.Instance.GetLeftHandPoses(), GameManager.Instance.GetRightHandPoses()));
 
                 // Reset the timer
                 timeSinceLastRecord = 0.0f;
@@ -71,14 +76,14 @@ public class SaveData : MonoBehaviour
     // Method to save recorded data to a file on the desktop
     public void SaveDataToDesktop()
     {
-        string desktopPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop) ;
-        string filePath = Path.Combine(desktopPath + "//Recorded_Data", this.name + "_Data.txt");
+        string desktopPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop);
+        string filePath = Path.Combine(desktopPath + "/Recorded_Data", this.name + "_Data.txt");
 
         using (StreamWriter writer = new StreamWriter(filePath))
         {
-            foreach (TransformData data in recordedData)
+            foreach (Data data in recordedData)
             {
-                writer.WriteLine($"{data.position},{data.rotation}, {data.velocity}, {data.angVelocity}");
+                writer.WriteLine($"{data.position},{data.rotation}, {data.velocity}, {data.angVelocity}, {data.leftHand}, {data.rightHand}");
             }
         }
 

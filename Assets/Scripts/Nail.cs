@@ -4,39 +4,41 @@ using UnityEngine;
 
 public class Nail : MonoBehaviour
 {
-    public float hammerForce = 10f; // Force applied by the hammer
-    public float maxAngle = 90f; // Maximum angle the nail can be pushed
-    public Rigidbody rb;
+    public float pushForce = 0.05f; // How much the nail moves per hit
+    public float minDepth = -2f; // Minimum depth the nail can go
 
-    private bool isHammering = false;
+    private Vector3 initialPosition;
 
     void Start()
     {
-        if (rb == null)
-            rb = GetComponent<Rigidbody>();
+        initialPosition = transform.position;
     }
 
-    void Update()
-    {
-        // Limit the nail rotation angle
-        Vector3 euler = transform.rotation.eulerAngles;
-        euler.z = Mathf.Clamp(euler.z, 0, maxAngle);
-        transform.rotation = Quaternion.Euler(euler);
-    }
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+    //    if (other.gameObject.CompareTag("Hammer"))
+    //    {
 
-    void OnCollisionEnter(Collision collision)
+    //        MoveNailDown();
+    //    }
+    //}
+    private void OnCollisionEnter(Collision collision)
     {
+        print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
         if (collision.gameObject.CompareTag("Hammer"))
         {
-            isHammering = true;
-            ApplyHammerForce(collision);
+    
+            MoveNailDown();
         }
     }
 
-    void ApplyHammerForce(Collision collision)
+    void MoveNailDown()
     {
-        // Apply force based on impact
-        Vector3 forceDirection = transform.up * -1; // Push the nail downward
-        rb.AddForce(forceDirection * hammerForce, ForceMode.Impulse);
+        Vector3 newPosition = transform.position - new Vector3(0, pushForce, 0);
+        if (newPosition.y >= initialPosition.y + minDepth)
+        {
+            transform.position = newPosition;
+        }
     }
 }
