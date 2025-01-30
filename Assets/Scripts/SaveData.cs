@@ -40,6 +40,7 @@ public class SaveData : MonoBehaviour
 
     public Rigidbody rb;
     public float speedThreshold = .1f;
+    public float rbMultiplier = 100f;
 
     // Time interval for recording positions
     public float recordInterval = .1f; // in seconds
@@ -60,10 +61,10 @@ public class SaveData : MonoBehaviour
             // Calculate the current speed of the object
             float speed = rb.velocity.magnitude;
 
-            if (speedThreshold >= speed && timeSinceLastRecord >= recordInterval)
+            if (!rb.IsSleeping()  && timeSinceLastRecord >= recordInterval)
             {
                 // Record the current position and rotation
-                recordedData.Add(new Data(transform.position, transform.rotation, rb.velocity, rb.angularVelocity,
+                recordedData.Add(new Data(transform.position, transform.rotation, rb.velocity * rbMultiplier, rb.angularVelocity * rbMultiplier,
                     GameManager.Instance.GetLeftHandPoses(), GameManager.Instance.GetRightHandPoses()));
 
                 // Reset the timer
