@@ -25,7 +25,7 @@ public class Nail : MonoBehaviour
     //}
     private void OnCollisionEnter(Collision collision)
     {
-        print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+        //print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
         if (collision.gameObject.CompareTag("Hammer"))
         {
     

@@ -24,6 +24,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        //Debug.Log(handJointIds.Length); //its 24
+    }
+    // Headset *************************************************************************************************************************
+    public Transform headset;
+
     // HAND *************************************************************************************************************************
     public Hand leftHand;
     public Hand rightHand;
@@ -57,8 +64,6 @@ public class GameManager : MonoBehaviour
         //.Log(rightHandPoses[1]);
         return rightHandPoses;
     }
-
-
     // HAND *************************************************************************************************************************
 
 
